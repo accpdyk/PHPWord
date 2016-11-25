@@ -21,6 +21,7 @@ namespace PhpOffice\PhpWord\Writer\Word2007\Part;
  * Word2007 settings part writer: word/settings.xml
  *
  * @link http://www.schemacentral.com/sc/ooxml/t-w_CT_Settings.html
+ *
  */
 class Settings extends AbstractPart
 {
@@ -30,6 +31,13 @@ class Settings extends AbstractPart
      * @var array
      */
     private $settings = array();
+
+    /**
+     * 页眉，页脚，奇偶页是否不同
+     * odd, even headers is different
+     * @var boolean
+     */
+    private $isDifferentHeaders = false;
 
     /**
      * Write part
@@ -137,7 +145,10 @@ class Settings extends AbstractPart
                 ),
             ),
         );
-
+        //even,odd headers
+        if($this->isDifferentHeaders === true){
+            $this->settings['w:evenAndOddHeaders'] = array('@attributes'=>array('w:val' => '1'));
+        }
         // Other settings
         $this->getProtection();
         $this->getCompatibility();
@@ -176,5 +187,10 @@ class Settings extends AbstractPart
                 'w:val'     => $compatibility->getOoxmlVersion(),
             ));
         }
+    }
+
+    public  function setIsDifferentHeaders($val)
+    {
+        $this->isDifferentHeaders = $val;
     }
 }

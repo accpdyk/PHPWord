@@ -51,7 +51,20 @@ class Word2007 extends AbstractWriter implements WriterInterface
         // Assign PhpWord
         $this->setPhpWord($phpWord);
 
-        // Create parts
+        //判断页眉页脚是否设置奇偶不同
+        $_isDifferent = false;
+        $_sections = $this->phpWord->getSections();
+        foreach ($_sections as $item){
+            $_headers = $item->getHeaders();
+            foreach ($_headers as $hd){
+                if($hd->getType() == 'even'){
+                    $_isDifferent = true;
+                    break;
+                }
+            }
+        }
+
+
         $this->parts = array(
             'ContentTypes'   => '[Content_Types].xml',
             'Rels'           => '_rels/.rels',
@@ -78,6 +91,12 @@ class Word2007 extends AbstractWriter implements WriterInterface
             if (class_exists($partClass)) {
                 /** @var \PhpOffice\PhpWord\Writer\Word2007\Part\AbstractPart $part Type hint */
                 $part = new $partClass();
+                //设置
+                if($partName =='Settings'){
+                    /* @var  \PhpOffice\PhpWord\Writer\Word2007\Part\Settings $part */
+                    $part->setIsDifferentHeaders($_isDifferent);
+                }
+
                 $part->setParentWriter($this);
                 $this->writerParts[strtolower($partName)] = $part;
             }
